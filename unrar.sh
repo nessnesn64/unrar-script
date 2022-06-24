@@ -4,14 +4,38 @@ echo "This is the current working directory"
 
 echo $PWD
 
-echo "Please enter the directory we will be working from"
 
-read extract_directory
+echo "Are you extracting a Season (s) or collection of Episodes (e)?"
+
+read type_selection
+
+if [ $type_selection == "s" ]
+then
+    echo "Please enter the directory we will be working from"
+
+    read extract_directory
+
+    cd $extract_directory
+
+    echo "We are now working from within $PWD"
+fi
+
+if [ $type_selection == "e" ]
+then
+    echo "Please enter the prefix of all episodes to extract"
+
+    read directory_prefix
+
+    cd /mnt/usb1/downloads
+
+    echo "We are now working from within $PWD"
+fi
+
 
 #Print entered subdirectory
 echo $extract_directory
 
-cd $extract_directory
+echo $directory_prefix
 
 echo "We are now working from within $PWD"
 
@@ -31,8 +55,22 @@ then
 fi
 
 
-#Countdown timer before rest of script runs
+if [ $type_selection == "s" ]
+then
+    folders=( * )
+fi
 
+if [ $type_selection == "e" ]
+then
+    folders=( $directory_prefix* )
+fi
+
+echo ${folders[*]}
+
+echo ${#folders[@]}
+
+
+#Countdown timer before rest of script runs
 echo "sleeping for 10 secs"
 
 for t in {10..1};
@@ -43,12 +81,6 @@ done
 
 
 
-
-folders=( * )
-
-echo ${folders[*]}
-
-echo ${#folders[@]}
 
 for n in ${folders[@]}
 do
@@ -68,13 +100,23 @@ do
     then
         mv *.mp4 $unrar_dropoff
     fi
+
+    if [ -f *.mkv ]
+    then
+        mv *.mkv $unrar_dropoff
+    fi
     cd ..
     echo "We are now working from within $PWD"
 
 done
 
-echo $PWD
-cd $extract_directory
-ls
-mkdir extraction
-mv /mnt/usb1/unrar/*.* ./extraction
+
+if [ $type_selection == "s" ]
+then
+    echo $PWD
+    cd $extract_directory
+    ls
+    mkdir extraction
+    mv /mnt/usb1/unrar/*.* ./extraction
+fi
+
